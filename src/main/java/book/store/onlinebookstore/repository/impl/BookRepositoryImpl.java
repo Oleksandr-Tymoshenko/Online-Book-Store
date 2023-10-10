@@ -1,5 +1,6 @@
 package book.store.onlinebookstore.repository.impl;
 
+import book.store.onlinebookstore.exception.DataProcessingException;
 import book.store.onlinebookstore.model.Book;
 import book.store.onlinebookstore.repository.BookRepository;
 import java.util.List;
@@ -18,12 +19,21 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public Book save(Book book) {
-        sessionFactory.inTransaction(session -> session.persist(book));
+        try {
+            sessionFactory.inTransaction(session -> session.persist(book));
+        } catch (Exception e) {
+            throw new DataProcessingException("Can't save book to db", e);
+        }
         return book;
     }
 
     @Override
     public List<Book> findAll() {
-        return sessionFactory.openSession().createQuery("from Book ", Book.class).getResultList();
+        try {
+            return sessionFactory
+                    .openSession().createQuery("from Book ", Book.class).getResultList();
+        } catch (Exception e) {
+            throw new DataProcessingException("Can't receive all books from db", e);
+        }
     }
 }
