@@ -29,7 +29,7 @@ public class BookServiceImpl implements BookService {
         if (optionalBook.isPresent()) {
             return bookMapper.toDto(optionalBook.get());
         }
-        throw new EntityNotFoundException("Entity not found by id " + id);
+        throw new EntityNotFoundException("Book was not found by id " + id);
     }
 
     @Override
