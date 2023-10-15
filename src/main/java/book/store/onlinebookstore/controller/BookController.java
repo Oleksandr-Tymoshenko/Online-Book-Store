@@ -1,6 +1,7 @@
 package book.store.onlinebookstore.controller;
 
 import book.store.onlinebookstore.dto.BookDto;
+import book.store.onlinebookstore.dto.BookSearchParameters;
 import book.store.onlinebookstore.dto.CreateBookRequestDto;
 import book.store.onlinebookstore.service.BookService;
 import java.util.List;
@@ -31,10 +32,12 @@ public class BookController {
     public List<BookDto> getAll() {
         return bookService.findAll();
     }
-    @GetMapping("/search")
-    public List<BookDto> searchBooks(BookSearchParametersDto searchParameters) {
 
+    @GetMapping("/search")
+    public List<BookDto> search(BookSearchParameters searchParameters) {
+        return bookService.search(searchParameters);
     }
+
     @PostMapping
     public BookDto createBook(@RequestBody CreateBookRequestDto bookDto) {
         return bookService.save(bookDto);
