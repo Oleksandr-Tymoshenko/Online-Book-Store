@@ -8,7 +8,6 @@ import book.store.onlinebookstore.model.Book;
 import book.store.onlinebookstore.repository.BookRepository;
 import book.store.onlinebookstore.service.BookService;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,16 +19,14 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto save(CreateBookRequestDto book) {
-        return bookMapper.toDto(bookRepository.save(bookMapper.toModel(book)));
+        return bookMapper.toDto(bookRepository.save(bookMapper.toBook(book)));
     }
 
     @Override
     public BookDto findById(Long id) {
-        Optional<Book> optionalBook = bookRepository.findById(id);
-        if (optionalBook.isPresent()) {
-            return bookMapper.toDto(optionalBook.get());
-        }
-        throw new EntityNotFoundException("Book was not found by id " + id);
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Book was not found by id " + id));
+        return bookMapper.toDto(book);
     }
 
     @Override
