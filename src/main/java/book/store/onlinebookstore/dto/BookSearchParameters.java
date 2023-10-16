@@ -1,9 +1,5 @@
 package book.store.onlinebookstore.dto;
 
-import lombok.Data;
+public record BookSearchParameters(String[] titles, String[] authors) {
 
-@Data
-public class BookSearchParameters {
-    private String[] titles;
-    private String[] authors;
 }
