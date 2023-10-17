@@ -11,7 +11,7 @@ public interface BookService {
 
     BookDto findById(Long id);
 
-    List<BookDto> search(BookSearchParameters searchParameters);
+    List<BookDto> search(BookSearchParameters searchParameters, Pageable pageable);
 
     List<BookDto> findAll(Pageable pageable);
 
