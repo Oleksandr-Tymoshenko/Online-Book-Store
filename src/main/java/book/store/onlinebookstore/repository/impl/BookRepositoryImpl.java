@@ -1,21 +1,19 @@
 package book.store.onlinebookstore.repository.impl;
 
 import book.store.onlinebookstore.exception.DataProcessingException;
+import book.store.onlinebookstore.exception.EntityNotFoundException;
 import book.store.onlinebookstore.model.Book;
 import book.store.onlinebookstore.repository.BookRepository;
 import java.util.List;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class BookRepositoryImpl implements BookRepository {
     private final SessionFactory sessionFactory;
-
-    @Autowired
-    public BookRepositoryImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
 
     @Override
     public Book save(Book book) {
@@ -25,6 +23,16 @@ public class BookRepositoryImpl implements BookRepository {
             throw new DataProcessingException("Can't save book to db", e);
         }
         return book;
+    }
+
+    @Override
+    public Optional<Book> findById(Long id) {
+        try {
+            return Optional.ofNullable(sessionFactory.openSession().find(Book.class, id));
+        } catch (Exception e) {
+            throw new EntityNotFoundException("Can't find book by id " + id, e);
+        }
+
     }
 
     @Override
