@@ -1,8 +1,8 @@
 package book.store.onlinebookstore.controller;
 
-import book.store.onlinebookstore.dto.BookDto;
-import book.store.onlinebookstore.dto.BookSearchParameters;
-import book.store.onlinebookstore.dto.CreateBookRequestDto;
+import book.store.onlinebookstore.dto.book.BookDto;
+import book.store.onlinebookstore.dto.book.BookSearchParameters;
+import book.store.onlinebookstore.dto.book.CreateBookRequestDto;
 import book.store.onlinebookstore.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,12 +34,14 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Get book by id", description = "Get the book by its id number")
     public BookDto getBookById(@PathVariable @Positive Long id) {
         return bookService.findById(id);
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Get all books",
             description = "Get all books per website pages, default: page = 0, size = 5")
     public List<BookDto> getAll(@PageableDefault(page = 0, size = 5) Pageable pageable) {
@@ -46,6 +49,7 @@ public class BookController {
     }
 
     @GetMapping("/search")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Search books",
             description = "Search books by title and author (titles=values&authors=values")
     public List<BookDto> search(BookSearchParameters searchParameters, Pageable pageable) {
@@ -54,12 +58,14 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Create a new book", description = "Create a new book")
     public BookDto createBook(@RequestBody @Valid CreateBookRequestDto bookDto) {
         return bookService.save(bookDto);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Update book by id", description = "Update the book by its id number")
     public BookDto updateById(@PathVariable @Positive Long id,
                               @RequestBody @Valid CreateBookRequestDto bookDto) {
@@ -67,6 +73,7 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete book by id",
             description = "Delete the book by its id number (soft-delete)")
