@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.Length;
 
 @FieldMatch(fields = {"password", "repeatPassword"})
 public record UserRegistrationRequestDto(
-        @Email @NotBlank @Length(max = 255)
+        @Email(regexp = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$") @Length(max = 255)
         String email,
         @NotBlank @Length(min = 2, max = 255)
         String firstName,
