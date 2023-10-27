@@ -9,7 +9,6 @@ import book.store.onlinebookstore.model.User;
 import book.store.onlinebookstore.repository.role.RoleRepository;
 import book.store.onlinebookstore.repository.user.UserRepository;
 import book.store.onlinebookstore.service.UserService;
-import java.util.HashSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
