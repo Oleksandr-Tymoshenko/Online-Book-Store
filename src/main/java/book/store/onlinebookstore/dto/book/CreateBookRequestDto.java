@@ -1,6 +1,5 @@
 package book.store.onlinebookstore.dto.book;
 
-import book.store.onlinebookstore.model.Category;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -13,7 +12,7 @@ public record CreateBookRequestDto(
         @NotBlank String author,
         @NotBlank @Pattern(regexp = "^(?=(?:\\D*\\d){10}(?:(?:\\D*\\d){3})?$)[\\d-]+$") String isbn,
         @NotNull @Positive BigDecimal price,
-        Set<Category> categories,
+        Set<Long> categoriesIds,
         String description, String coverImage) {
 
 }
