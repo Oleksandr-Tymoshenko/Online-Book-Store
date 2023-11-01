@@ -62,8 +62,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto updateById(Long id, CreateBookRequestDto requestBookDto) {
-        Book book = bookMapper.toBook(requestBookDto);
-        book.setId(id);
+
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Can't find book by id " + id));
+        bookMapper.updateCategory(requestBookDto, book);
         return bookMapper.toDto(bookRepository.save(book));
     }
 }
