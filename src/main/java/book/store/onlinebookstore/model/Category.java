@@ -21,9 +21,9 @@ public class Category {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String name = "";
 
-    private String description;
+    private String description = "";
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;

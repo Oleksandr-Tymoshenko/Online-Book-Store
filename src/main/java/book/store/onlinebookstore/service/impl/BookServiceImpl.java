@@ -8,10 +8,14 @@ import book.store.onlinebookstore.dto.book.UpdateBookRequestDto;
 import book.store.onlinebookstore.exception.EntityNotFoundException;
 import book.store.onlinebookstore.mapper.BookMapper;
 import book.store.onlinebookstore.model.Book;
+import book.store.onlinebookstore.model.Category;
 import book.store.onlinebookstore.repository.book.BookRepository;
 import book.store.onlinebookstore.repository.book.BookSpecificationBuilder;
+import book.store.onlinebookstore.repository.category.CategoryRepository;
 import book.store.onlinebookstore.service.BookService;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,12 +24,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
+    private final CategoryRepository categoryRepository;
     private final BookMapper bookMapper;
     private final BookSpecificationBuilder specificationBuilder;
 
     @Override
-    public BookDto save(CreateBookRequestDto book) {
-        return bookMapper.toDto(bookRepository.save(bookMapper.toBook(book)));
+    public BookDto save(CreateBookRequestDto bookRequestDto) {
+        Book newBook = bookMapper.toBook(bookRequestDto);
+        newBook.setCategories(getCategoriesFromIds(bookRequestDto.categoriesIds()));
+        return bookMapper.toDto(bookRepository.save(newBook));
     }
 
     @Override
@@ -68,6 +75,11 @@ public class BookServiceImpl implements BookService {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Can't find book by id " + id));
         bookMapper.updateBook(requestBookDto, book);
+        book.setCategories(getCategoriesFromIds(requestBookDto.categoriesIds()));
         return bookMapper.toDto(bookRepository.save(book));
+    }
+
+    private Set<Category> getCategoriesFromIds(Set<Long> ids) {
+        return new HashSet<>(categoryRepository.findAllById(ids));
     }
 }
