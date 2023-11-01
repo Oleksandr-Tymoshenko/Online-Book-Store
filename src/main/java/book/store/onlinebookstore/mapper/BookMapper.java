@@ -3,6 +3,7 @@ package book.store.onlinebookstore.mapper;
 import book.store.onlinebookstore.dto.book.BookDto;
 import book.store.onlinebookstore.dto.book.BookDtoWithoutCategoryIds;
 import book.store.onlinebookstore.dto.book.CreateBookRequestDto;
+import book.store.onlinebookstore.dto.book.UpdateBookRequestDto;
 import book.store.onlinebookstore.model.Book;
 import book.store.onlinebookstore.model.Category;
 import java.util.stream.Collectors;
@@ -27,7 +28,7 @@ public interface BookMapper {
     BookDtoWithoutCategoryIds toDtoWithoutCategories(Book book);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateCategory(CreateBookRequestDto requestDto, @MappingTarget Book book);
+    void updateBook(UpdateBookRequestDto requestDto, @MappingTarget Book book);
 
     @AfterMapping
     default void setCategoryIds(@MappingTarget BookDto bookDto, Book book) {

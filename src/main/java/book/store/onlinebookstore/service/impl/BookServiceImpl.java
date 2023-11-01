@@ -4,6 +4,7 @@ import book.store.onlinebookstore.dto.book.BookDto;
 import book.store.onlinebookstore.dto.book.BookDtoWithoutCategoryIds;
 import book.store.onlinebookstore.dto.book.BookSearchParameters;
 import book.store.onlinebookstore.dto.book.CreateBookRequestDto;
+import book.store.onlinebookstore.dto.book.UpdateBookRequestDto;
 import book.store.onlinebookstore.exception.EntityNotFoundException;
 import book.store.onlinebookstore.mapper.BookMapper;
 import book.store.onlinebookstore.model.Book;
@@ -28,16 +29,18 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDto findById(Long id) {
-        Book book = bookRepository.findById(id)
+    public BookDto getById(Long id) {
+        return bookRepository
+                .findById(id)
+                .map(bookMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("Book was not found by id " + id));
-        return bookMapper.toDto(book);
     }
 
     @Override
     public List<BookDtoWithoutCategoryIds> findBooksByCategoryId(Long id, Pageable pageable) {
         return bookRepository.findAllByCategoriesId(id, pageable).stream()
-                .map(bookMapper::toDtoWithoutCategories).toList();
+                .map(bookMapper::toDtoWithoutCategories)
+                .toList();
     }
 
     @Override
@@ -61,11 +64,10 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDto updateById(Long id, CreateBookRequestDto requestBookDto) {
-
+    public BookDto updateById(Long id, UpdateBookRequestDto requestBookDto) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Can't find book by id " + id));
-        bookMapper.updateCategory(requestBookDto, book);
+        bookMapper.updateBook(requestBookDto, book);
         return bookMapper.toDto(bookRepository.save(book));
     }
 }

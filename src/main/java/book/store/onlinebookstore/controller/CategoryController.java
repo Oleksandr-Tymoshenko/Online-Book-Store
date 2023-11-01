@@ -3,6 +3,7 @@ package book.store.onlinebookstore.controller;
 import book.store.onlinebookstore.dto.book.BookDtoWithoutCategoryIds;
 import book.store.onlinebookstore.dto.category.CategoryDto;
 import book.store.onlinebookstore.dto.category.CreateCategoryRequestDto;
+import book.store.onlinebookstore.dto.category.UpdateCategoryRequestDto;
 import book.store.onlinebookstore.service.BookService;
 import book.store.onlinebookstore.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -71,12 +72,12 @@ public class CategoryController {
     @Operation(summary = "Update category by id",
             description = "Update the category by its id number")
     public CategoryDto updateCategory(@PathVariable @Positive Long id,
-                                      @RequestBody @Valid CreateCategoryRequestDto requestDto) {
+                                      @RequestBody @Valid UpdateCategoryRequestDto requestDto) {
         return categoryService.update(id, requestDto);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Delete category by id",
             description = "Delete the category by its id number (soft-delete)")
