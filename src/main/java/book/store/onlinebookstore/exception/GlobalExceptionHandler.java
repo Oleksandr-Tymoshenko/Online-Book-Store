@@ -1,6 +1,5 @@
 package book.store.onlinebookstore.exception;
 
-import io.jsonwebtoken.JwtException;
 import java.nio.file.AccessDeniedException;
 import java.util.LinkedHashMap;
 import java.util.List;
