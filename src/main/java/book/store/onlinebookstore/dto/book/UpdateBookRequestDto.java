@@ -11,6 +11,7 @@ public record UpdateBookRequestDto(
         @Pattern(regexp = "^(?=(?:\\D*\\d){10}(?:(?:\\D*\\d){3})?$)[\\d-]+$") String isbn,
         @Positive BigDecimal price,
         Set<Long> categoriesIds,
-        String description, String coverImage) {
+        String description,
+        String coverImage) {
 
 }

@@ -14,6 +14,7 @@ public record CreateBookRequestDto(
         @NotBlank @Pattern(regexp = "^(?=(?:\\D*\\d){10}(?:(?:\\D*\\d){3})?$)[\\d-]+$") String isbn,
         @NotNull @Positive BigDecimal price,
         @NotEmpty Set<@Positive Long> categoriesIds,
-        String description, String coverImage) {
+        String description,
+        String coverImage) {
 
 }
