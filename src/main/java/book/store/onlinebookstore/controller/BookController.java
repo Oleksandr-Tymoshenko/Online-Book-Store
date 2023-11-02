@@ -3,6 +3,7 @@ package book.store.onlinebookstore.controller;
 import book.store.onlinebookstore.dto.book.BookDto;
 import book.store.onlinebookstore.dto.book.BookSearchParameters;
 import book.store.onlinebookstore.dto.book.CreateBookRequestDto;
+import book.store.onlinebookstore.dto.book.UpdateBookRequestDto;
 import book.store.onlinebookstore.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,7 +38,7 @@ public class BookController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Get book by id", description = "Get the book by its id number")
     public BookDto getBookById(@PathVariable @Positive Long id) {
-        return bookService.findById(id);
+        return bookService.getById(id);
     }
 
     @GetMapping
@@ -68,7 +69,7 @@ public class BookController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Update book by id", description = "Update the book by its id number")
     public BookDto updateById(@PathVariable @Positive Long id,
-                              @RequestBody @Valid CreateBookRequestDto bookDto) {
+                              @RequestBody @Valid UpdateBookRequestDto bookDto) {
         return bookService.updateById(id, bookDto);
     }
 
