@@ -14,7 +14,6 @@ import book.store.onlinebookstore.repository.cartitem.CartItemRepository;
 import book.store.onlinebookstore.repository.shoppingcart.ShoppingCartRepository;
 import book.store.onlinebookstore.repository.user.UserRepository;
 import book.store.onlinebookstore.service.ShoppingCartService;
-import java.util.HashSet;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,11 +50,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                             .orElseThrow(() -> new EntityNotFoundException("Can't find user by id "
                                     + userId));
                     newShoppingCart.setUser(user);
-                    newShoppingCart.setCartItems(new HashSet<>());
                     return newShoppingCart;
                 });
-        shoppingCart.getCartItems().add(cartItem);
-        cartItem.setShoppingCart(shoppingCart);
+        shoppingCart.addCartItem(cartItem);
+
         cartItemRepository.save(cartItem);
         return shoppingCartMapper.toShoppingCartDto(shoppingCart);
     }
@@ -86,7 +84,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 .orElseThrow(() -> new EntityNotFoundException("Can't find item by id "
                         + itemId + " in your shopping cart"));
         cartItemRepository.delete(cartItem);
-        shoppingCart.getCartItems().remove(cartItem);
+        shoppingCart.removeCartItem(cartItem);
         return shoppingCartMapper.toShoppingCartDto(shoppingCart);
     }
 }
