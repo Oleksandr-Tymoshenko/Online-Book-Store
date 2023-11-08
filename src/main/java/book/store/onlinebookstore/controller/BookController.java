@@ -35,14 +35,14 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get book by id", description = "Get the book by its id number")
     public BookDto getBookById(@PathVariable @Positive Long id) {
         return bookService.getById(id);
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get all books",
             description = "Get all books per website pages, default: page = 0, size = 5")
     public List<BookDto> getAll(@PageableDefault(page = 0, size = 5) Pageable pageable) {
@@ -50,7 +50,7 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Search books",
             description = "Search books by title and author (titles=values&authors=values")
     public List<BookDto> search(BookSearchParameters searchParameters, Pageable pageable) {
@@ -59,14 +59,14 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create a new book", description = "Create a new book")
     public BookDto createBook(@RequestBody @Valid CreateBookRequestDto bookDto) {
         return bookService.save(bookDto);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update book by id", description = "Update the book by its id number")
     public BookDto updateById(@PathVariable @Positive Long id,
                               @RequestBody @Valid UpdateBookRequestDto bookDto) {
@@ -74,7 +74,7 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete book by id",
             description = "Delete the book by its id number (soft-delete)")
