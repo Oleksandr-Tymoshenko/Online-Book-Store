@@ -85,7 +85,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return shoppingCartRepository.findById(user.getId())
                 .orElseGet(() -> {
                     ShoppingCart newShoppingCart = new ShoppingCart();
-                    newShoppingCart.setUser(user);
+                    newShoppingCart.setUser(userRepository.getReferenceById(user.getId()));
                     return shoppingCartRepository.save(newShoppingCart);
                 });
     }
