@@ -50,10 +50,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                             .orElseThrow(() -> new EntityNotFoundException("Can't find user by id "
                                     + userId));
                     newShoppingCart.setUser(user);
-                    return newShoppingCart;
+                    return shoppingCartRepository.save(newShoppingCart);
                 });
         shoppingCart.addCartItem(cartItem);
-
         cartItemRepository.save(cartItem);
         return shoppingCartMapper.toShoppingCartDto(shoppingCart);
     }
