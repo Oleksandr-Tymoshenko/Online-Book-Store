@@ -37,7 +37,7 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Place an order based on your shopping cart",
             description = """
                                 Place an order based on your shopping cart, 
@@ -50,7 +50,7 @@ public class OrderController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get all orders",
             description = "Get all orders for user, default: page = 0, size = 10")
     public List<OrderDto> getAll(Authentication authentication,
@@ -60,7 +60,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}/items")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get info by order",
             description = "Get all order items by order id")
     public List<OrderItemDto> getOrderItemsByOrderId(Authentication authentication,
@@ -70,7 +70,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}/items/{itemId}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get info about order item",
             description = "Get info about order item by order id and item id")
     public OrderItemDto getOrderItemsByOrderId(Authentication authentication,
@@ -81,11 +81,11 @@ public class OrderController {
     }
 
     @PatchMapping("/{orderId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update order status",
             description = "Update order status for order by id")
     public OrderDto updateOrderStatusById(@PathVariable @Positive Long orderId,
-                                          @RequestBody UpdateOrderRequestDto requestDto) {
+                                          @RequestBody @Valid UpdateOrderRequestDto requestDto) {
         return orderService.updateOrderStatus(orderId, requestDto);
     }
 }

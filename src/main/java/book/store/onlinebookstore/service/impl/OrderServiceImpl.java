@@ -50,6 +50,10 @@ public class OrderServiceImpl implements OrderService {
         Set<OrderItem> orderItems = cartItems.stream()
                 .map(cartItem -> {
                     OrderItem orderItem = orderItemMapper.fromCartItemToOrderItem(cartItem);
+                    orderItem.setPrice(
+                            orderItem.getPrice()
+                            .multiply(new BigDecimal(orderItem.getQuantity()))
+                    );
                     newOrder.setTotal(total.add(orderItem.getPrice()).add(newOrder.getTotal()));
                     orderItem.setOrder(newOrder);
                     return orderItemRepository.save(orderItem);
