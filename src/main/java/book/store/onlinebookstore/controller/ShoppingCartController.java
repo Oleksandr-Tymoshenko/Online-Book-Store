@@ -34,37 +34,37 @@ public class ShoppingCartController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Add a new book to shopping cart",
             description = "Add a new book to shopping cart")
     public ShoppingCartDto addCartItem(@RequestBody @Valid CreateCartItemRequestDto requestDto,
                                        Authentication authentication) {
-        User principal = (User) authentication.getPrincipal();
-        return shoppingCartService.addCartItem(requestDto, principal.getId());
+        User user = (User) authentication.getPrincipal();
+        return shoppingCartService.addCartItem(requestDto, user);
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get shopping cart",
             description = "Get shopping cart")
     public ShoppingCartDto getShoppingCart(Authentication authentication) {
-        User principal = (User) authentication.getPrincipal();
-        return shoppingCartService.getShoppingCart(principal.getId());
+        User user = (User) authentication.getPrincipal();
+        return shoppingCartService.getShoppingCart(user.getId());
     }
 
     @PutMapping("/cart-items/{id}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Update quantity of cart item",
             description = "Endpoint for updating quantity of an item in shopping cart")
     public ShoppingCartDto updateCartItem(@PathVariable @Positive Long id,
                                           @RequestBody UpdateCartItemRequestDto requestDto,
                                           Authentication authentication) {
-        User principal = (User) authentication.getPrincipal();
-        return shoppingCartService.updateCartItem(principal.getId(), id, requestDto.quantity());
+        User user = (User) authentication.getPrincipal();
+        return shoppingCartService.updateCartItem(user.getId(), id, requestDto.quantity());
     }
 
     @DeleteMapping("/cart-items/{id}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Delete book from shopping cart",
             description = "Delete book from shopping cart by id")
     public ShoppingCartDto deleteCartItem(@PathVariable @Positive Long id,

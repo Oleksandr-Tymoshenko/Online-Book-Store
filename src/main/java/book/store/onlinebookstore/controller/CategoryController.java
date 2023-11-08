@@ -37,14 +37,14 @@ public class CategoryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create a new category", description = "Create a new category")
     public CategoryDto createCategory(@RequestBody @Valid CreateCategoryRequestDto requestDto) {
         return categoryService.save(requestDto);
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get all categories",
             description = "Get all categories per website pages, default: page = 0, size = 10")
     public List<CategoryDto> getAll(Pageable pageable) {
@@ -52,14 +52,14 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get category by id", description = "Get the category by its id number")
     public CategoryDto getCategoryById(@PathVariable @Positive Long id) {
         return categoryService.getById(id);
     }
 
     @GetMapping("/{id}/books")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get books by category by id",
             description = "Get list of books by the category by its id number")
     public List<BookDtoWithoutCategoryIds> getBooksByCategoryId(@PathVariable @Positive Long id,
@@ -68,7 +68,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update category by id",
             description = "Update the category by its id number")
     public CategoryDto updateCategory(@PathVariable @Positive Long id,
@@ -78,7 +78,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Delete category by id",
             description = "Delete the category by its id number (soft-delete)")
     public void deleteCategory(@PathVariable @Positive Long id) {
