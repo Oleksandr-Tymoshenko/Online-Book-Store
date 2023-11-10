@@ -29,7 +29,7 @@ public class ShoppingCart {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JoinColumn(nullable = false, name = "user_id")
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true, optional = false)
     private User user;
 
     @ToString.Exclude
