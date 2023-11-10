@@ -49,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal total = BigDecimal.ZERO;
         Set<OrderItem> orderItems = cartItems.stream()
                 .map(cartItem -> {
-                    OrderItem orderItem = orderItemMapper.fromCartItemToOrderItem(cartItem);
+                    OrderItem orderItem = orderItemMapper.toOrderItem(cartItem);
                     orderItem.setPrice(
                             orderItem.getPrice()
                             .multiply(new BigDecimal(orderItem.getQuantity()))
