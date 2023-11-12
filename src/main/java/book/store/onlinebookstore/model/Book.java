@@ -60,6 +60,9 @@ public class Book {
     @OneToMany(mappedBy = "book", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private Set<CartItem> cartItems;
 
+    @OneToMany(mappedBy = "book", orphanRemoval = true, cascade = CascadeType.REMOVE)
+    private Set<OrderItem> orderItems;
+
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 }

@@ -9,13 +9,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.apache.commons.lang3.builder.ToStringExclude;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -57,10 +60,15 @@ public class User implements UserDetails {
     )
     private Set<Role> roles = new HashSet<>();
 
-    @ToStringExclude
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
     private ShoppingCart shoppingCart;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Order> orders;
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;

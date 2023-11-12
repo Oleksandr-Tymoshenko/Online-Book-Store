@@ -36,7 +36,7 @@ public class Order {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JoinColumn(nullable = false, name = "user_id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
     @Enumerated(EnumType.STRING)
@@ -54,7 +54,7 @@ public class Order {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderItem> orderItems = new LinkedHashSet<>();
 
     @Column(name = "is_deleted", nullable = false)
