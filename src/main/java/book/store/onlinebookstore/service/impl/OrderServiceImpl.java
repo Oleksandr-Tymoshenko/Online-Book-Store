@@ -45,10 +45,10 @@ public class OrderServiceImpl implements OrderService {
 
         Order newOrder = initNewOrder(requestDto, userId);
         orderRepository.save(newOrder);
-
         BigDecimal total = BigDecimal.ZERO;
         Set<OrderItem> orderItems = cartItems.stream()
-                .map(cartItem -> getOrderItem(cartItem, newOrder, total)).collect(Collectors.toSet());
+                .map(cartItem -> getOrderItem(cartItem, newOrder, total))
+                .collect(Collectors.toSet());
         newOrder.setOrderItems(orderItems);
 
         shoppingCartRepository.deleteById(userId);
