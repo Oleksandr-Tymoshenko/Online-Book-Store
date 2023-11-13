@@ -40,9 +40,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
 
         CartItem cartItem = cartItemMapper.toCartItem(requestDto);
-        Book bookFromDb = bookRepository.findById(requestDto.bookId())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find book by id "
-                        + requestDto.bookId()));
+        Book bookFromDb = bookRepository.getReferenceById(requestDto.bookId());
         cartItem.setBook(bookFromDb);
         ShoppingCart shoppingCart = getOrCreateShoppingCart(user);
         shoppingCart.addCartItem(cartItem);
@@ -76,7 +74,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         CartItem cartItem = cartItemRepository.findByIdAndShoppingCartId(itemId, userId)
                 .orElseThrow(() -> new EntityNotFoundException("Can't find item by id "
                         + itemId + " in your shopping cart"));
-        cartItemRepository.delete(cartItem);
         shoppingCart.removeCartItem(cartItem);
         return shoppingCartMapper.toShoppingCartDto(shoppingCart);
     }
