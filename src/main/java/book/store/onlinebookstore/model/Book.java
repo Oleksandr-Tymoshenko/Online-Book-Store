@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.lang3.builder.ToStringExclude;
+import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -42,7 +42,7 @@ public class Book {
     @Column(nullable = false)
     private BigDecimal price;
 
-    @ToStringExclude
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany
     @JoinTable(
