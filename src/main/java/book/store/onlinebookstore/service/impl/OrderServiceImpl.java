@@ -44,12 +44,12 @@ public class OrderServiceImpl implements OrderService {
         Set<CartItem> cartItems = shoppingCart.getCartItems();
 
         Order newOrder = initNewOrder(requestDto, userId);
-        orderRepository.save(newOrder);
         BigDecimal total = BigDecimal.ZERO;
         Set<OrderItem> orderItems = cartItems.stream()
                 .map(cartItem -> getOrderItem(cartItem, newOrder, total))
                 .collect(Collectors.toSet());
         newOrder.setOrderItems(orderItems);
+        orderRepository.save(newOrder);
 
         shoppingCartRepository.deleteById(userId);
         return orderMapper.toDto(newOrder);
@@ -110,6 +110,6 @@ public class OrderServiceImpl implements OrderService {
         );
         order.setTotal(total.add(orderItem.getPrice()).add(order.getTotal()));
         orderItem.setOrder(order);
-        return orderItemRepository.save(orderItem);
+        return orderItem;
     }
 }
