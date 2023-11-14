@@ -59,7 +59,7 @@ public class User implements UserDetails {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private ShoppingCart shoppingCart;
 
     @Column(name = "is_deleted", nullable = false)

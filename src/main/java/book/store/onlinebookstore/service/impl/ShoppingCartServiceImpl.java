@@ -32,6 +32,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     @Transactional
     public ShoppingCartDto addCartItem(CreateCartItemRequestDto requestDto, User user) {
+        if (!bookRepository.existsById(requestDto.bookId())) {
+            throw new EntityNotFoundException("Can't find book by id " + requestDto.bookId());
+        }
         Optional<CartItem> cartItemByBookId = cartItemRepository
                 .findCartItemByShoppingCartIdAndBookId(user.getId(), requestDto.bookId());
         if (cartItemByBookId.isPresent()) {
