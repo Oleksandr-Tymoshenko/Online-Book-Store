@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: modify_price_column_size
+      author: root
+      changes:
+        - modifyDataType:
+            tableName: order_items
+            columnName: price
+            newDataType: numeric(10,2)
+        - modifyDataType:
+            tableName: orders
+            columnName: total
+            newDataType: numeric(15,2)
