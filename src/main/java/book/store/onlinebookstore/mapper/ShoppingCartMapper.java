@@ -1,10 +1,10 @@
 package book.store.onlinebookstore.mapper;
 
-import book.store.onlinebookstore.dto.user.UserRegistrationRequestDto;
-import book.store.onlinebookstore.dto.user.UserRegistrationResponseDto;
-import book.store.onlinebookstore.model.User;
+import book.store.onlinebookstore.dto.shoppingcart.ShoppingCartDto;
+import book.store.onlinebookstore.model.ShoppingCart;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.NullValueCheckStrategy;
 
 @Mapper(
@@ -13,8 +13,8 @@ import org.mapstruct.NullValueCheckStrategy;
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
         uses = CartItemMapper.class
 )
-public interface UserMapper {
-    UserRegistrationResponseDto toUserResponseDto(User user);
-
-    User toUser(UserRegistrationRequestDto requestDto);
+public interface ShoppingCartMapper {
+    @Mapping(source = "cartItems", target = "cartItems")
+    @Mapping(source = "user.id", target = "userId")
+    ShoppingCartDto toShoppingCartDto(ShoppingCart shoppingCart);
 }

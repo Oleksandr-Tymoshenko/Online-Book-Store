@@ -1,5 +1,6 @@
 package book.store.onlinebookstore.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,13 +9,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.lang3.builder.ToStringExclude;
+import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -40,7 +42,7 @@ public class Book {
     @Column(nullable = false)
     private BigDecimal price;
 
-    @ToStringExclude
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany
     @JoinTable(
@@ -54,6 +56,9 @@ public class Book {
 
     @Column(name = "cover_image")
     private String coverImage;
+
+    @OneToMany(mappedBy = "book", orphanRemoval = true, cascade = CascadeType.REMOVE)
+    private Set<CartItem> cartItems;
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
