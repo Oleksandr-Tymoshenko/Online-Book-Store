@@ -1,57 +1,58 @@
-<style>
-    p>a {
-        color:rgba(187,189,195,0.62);        
-        margin: 0 5px 0 5px;
-    }
-    p>a:hover {
-        color: #bbbdc3;
-    }
-    a {        
-        text-decoration: none;
-        transition: all 0.3s;
-        position: relative;
-    }
-    a:hover {        
-        text-decoration: none;
-    }
-    p>a::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        bottom: -2px;
-        width: 100%;
-        height: 1px;
-        background-color: #bbbdc3;
-        border-radius: 4px;
-        scale: 0 1;
-        transform-origin: left;
-        transition: all 0.3s;
-    }
-    p>a:hover::before {
-        scale: 1 1;
-    }
-    .up-btn {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        border: 1px solid #bbbdc3;
-        border-radius: 50%;
-        width: 42px;
-        line-height: 40px;
-        text-align: center;
-        cursor: pointer;
-        font-size: 30px;
-        color: #bbbdc3;
-    }
-    .up-btn:hover {
-        color: #1e1f22;
-        background-color: #bbbdc3;
-    }
-</style>
-
+<body>
+    <style>
+        p>a {
+            color:rgba(187,189,195,0.62);        
+            margin: 0 5px 0 5px;
+        }
+        p>a:hover {
+            color: #bbbdc3;
+        }
+        a {        
+            text-decoration: none;
+            transition: all 0.3s;
+            position: relative;
+        }
+        a:hover {        
+            text-decoration: none;
+        }
+        p>a::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            width: 100%;
+            height: 1px;
+            background-color: #bbbdc3;
+            border-radius: 4px;
+            scale: 0 1;
+            transform-origin: left;
+            transition: all 0.3s;
+        }
+        p>a:hover::before {
+            scale: 1 1;
+        }
+        .up-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            border: 1px solid #bbbdc3;
+            border-radius: 50%;
+            width: 42px;
+            line-height: 40px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 30px;
+            color: #bbbdc3;
+        }
+        .up-btn:hover {
+            color: #1e1f22;
+            background-color: #bbbdc3;
+        }
+    </style>
+</body>
 <h1 id="start"> Online book store</h1>
 
-<a href="#start" class="up-btn">
+<a href="#start" style="position: fixed;bottom: 20px;right: 20px;border: 1px solid #bbbdc3;border-radius: 50%;width: 42px;line-height: 40px;text-align: center;cursor: pointer;font-size: 30px;color: #bbbdc3;">
 ⬆
 </a>
 
