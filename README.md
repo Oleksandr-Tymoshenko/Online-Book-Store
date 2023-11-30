@@ -1,62 +1,5 @@
-<body>
-    <style>
-        p>a {
-            color:rgba(187,189,195,0.62);        
-            margin: 0 5px 0 5px;
-        }
-        p>a:hover {
-            color: #bbbdc3;
-        }
-        a {        
-            text-decoration: none;
-            transition: all 0.3s;
-            position: relative;
-        }
-        a:hover {        
-            text-decoration: none;
-        }
-        p>a::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            bottom: -2px;
-            width: 100%;
-            height: 1px;
-            background-color: #bbbdc3;
-            border-radius: 4px;
-            scale: 0 1;
-            transform-origin: left;
-            transition: all 0.3s;
-        }
-        p>a:hover::before {
-            scale: 1 1;
-        }
-        .up-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            border: 1px solid #bbbdc3;
-            border-radius: 50%;
-            width: 42px;
-            line-height: 40px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 30px;
-            color: #bbbdc3;
-        }
-        .up-btn:hover {
-            color: #1e1f22;
-            background-color: #bbbdc3;
-        }
-    </style>
-</body>
 <h1 id="start"> Online book store</h1>
 
-<a href="#start" style="position: fixed;bottom: 20px;right: 20px;border: 1px solid #bbbdc3;border-radius: 50%;width: 42px;line-height: 40px;text-align: center;cursor: pointer;font-size: 30px;color: #bbbdc3;">
-⬆
-</a>
-
-___
 Welcome to the online bookstore management system!
 This application provides a convenient experience
 for both buyers and managers. Customers can register,
@@ -75,7 +18,7 @@ authorization functions using JWT tokens
   <a href="#endpoints">Endpoints</a>
 </p>
 
-___
+
 
 <h2 id="technologies"> Technologies</h2>
 <ul style="list-style: none">
@@ -92,7 +35,7 @@ ___
  <li><img src="icons/Swagger-logo.png" alt="" width="25" style="position: relative; top: 5px;"> Swagger</li>
 </ul>
 
-___
+
 
 <h2 id="getting-started"> Getting Started</h2>
 
@@ -120,7 +63,7 @@ docker-compose up --build
 
 5. The application should now be running at `http://localhost:8081`.
 
-___
+
 
 <h2 id="domain-models"> Domain Models</h2>
 
@@ -159,7 +102,7 @@ ___
 
 * Attributes: Represents an item in a user's order, associated with a specific book.
 
-___
+
 <h2 id="user-roles"> User Roles</h2>
 
 #### Shopper (User)
@@ -171,11 +114,11 @@ ___
 
 * Actions: Empowered to arrange books, organize bookshelf sections, manage receipts, and modify their status.
 
-___
+
 <h2 id="database-structure"> Database structure</h2>
 
 ![database structure](icons/bookservicedb.png)
-___
+
 <h2 id="endpoints"> Endpoints</h2>
 
 #### Authorization
