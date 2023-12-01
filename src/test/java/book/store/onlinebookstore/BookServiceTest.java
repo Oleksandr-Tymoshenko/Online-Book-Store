@@ -5,14 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import book.store.onlinebookstore.dto.book.BookDto;
 import book.store.onlinebookstore.dto.book.BookDtoWithoutCategoryIds;
+import book.store.onlinebookstore.dto.book.BookSearchParameters;
 import book.store.onlinebookstore.dto.book.CreateBookRequestDto;
+import book.store.onlinebookstore.dto.book.UpdateBookRequestDto;
 import book.store.onlinebookstore.exception.EntityNotFoundException;
 import book.store.onlinebookstore.mapper.BookMapper;
 import book.store.onlinebookstore.model.Book;
 import book.store.onlinebookstore.model.Category;
 import book.store.onlinebookstore.repository.book.BookRepository;
+import book.store.onlinebookstore.repository.book.BookSpecificationBuilder;
 import book.store.onlinebookstore.repository.category.CategoryRepository;
-import book.store.onlinebookstore.service.BookService;
 import book.store.onlinebookstore.service.impl.BookServiceImpl;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -43,6 +45,9 @@ public class BookServiceTest {
 
     @Mock
     private BookMapper bookMapper;
+
+    @Mock
+    private BookSpecificationBuilder specificationBuilder;
 
     @InjectMocks
     private BookServiceImpl bookService;
@@ -75,30 +80,30 @@ public class BookServiceTest {
                 .collect(Collectors.toSet());
         book.setCategories(categories);
 
-        BookDto bookDto = new BookDto();
-        bookDto.setId(1L);
-        bookDto.setTitle(requestDto.title());
-        bookDto.setAuthor(requestDto.author());
-        bookDto.setIsbn(requestDto.isbn());
-        bookDto.setPrice(requestDto.price());
-        bookDto.setCategoriesIds(requestDto.categoriesIds());
+        BookDto expected = new BookDto();
+        expected.setId(1L);
+        expected.setTitle(requestDto.title());
+        expected.setAuthor(requestDto.author());
+        expected.setIsbn(requestDto.isbn());
+        expected.setPrice(requestDto.price());
+        expected.setCategoriesIds(requestDto.categoriesIds());
 
         Mockito.when(bookMapper.toBook(requestDto)).thenReturn(book);
         Mockito.when(categoryRepository.findAllById(requestDto.categoriesIds()))
                 .thenReturn(new ArrayList<>(categories));
         Mockito.when(bookRepository.save(book)).thenReturn(book);
-        Mockito.when(bookMapper.toDto(book)).thenReturn(bookDto);
+        Mockito.when(bookMapper.toDto(book)).thenReturn(expected);
 
         //when
-        BookDto savedDto = bookService.save(requestDto);
+        BookDto actual = bookService.save(requestDto);
 
         //then
-        Assertions.assertThat(savedDto).isEqualTo(bookDto);
+        Assertions.assertThat(actual).isEqualTo(expected);
         Mockito.verify(bookRepository, Mockito.times(1)).save(book);
     }
 
     @Test
-    @DisplayName("Check if get by id works")
+    @DisplayName("Check if get book by id works")
     void getById_ValidId_ReturnsBookDto() {
         //given
         Long bookId = 1L;
@@ -122,7 +127,7 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("Check if get by id throws exception with incorrect id")
+    @DisplayName("Check if get book by id throws exception with incorrect id")
     void getById_InvalidId_ThrowsEntityNotFound() {
         //given
         Long bookId = -1L;
@@ -144,14 +149,14 @@ public class BookServiceTest {
     @DisplayName("Check if List of books is returned by category id")
     void findBooksByCategoryId_ValidId_ReturnListOfBookDto() {
         //given
-        Long categoryId = 1L;
+
         Book book1 = new Book();
         book1.setId(1L);
         book1.setTitle("Book1");
         book1.setAuthor("Test Author1");
         book1.setIsbn("123-123-0001");
         book1.setPrice(BigDecimal.valueOf(100));
-        BookDtoWithoutCategoryIds bookDto1 = new BookDtoWithoutCategoryIds(
+        var bookDto1 = new BookDtoWithoutCategoryIds(
                 book1.getId(),
                 book1.getTitle(),
                 book1.getAuthor(),
@@ -168,7 +173,7 @@ public class BookServiceTest {
         book2.setIsbn("123-123-0002");
         book2.setPrice(BigDecimal.valueOf(200));
         List<Book> books = List.of(book1, book2);
-        BookDtoWithoutCategoryIds bookDto2 = new BookDtoWithoutCategoryIds(
+        var bookDto2 = new BookDtoWithoutCategoryIds(
                 book2.getId(),
                 book2.getTitle(),
                 book2.getAuthor(),
@@ -177,7 +182,7 @@ public class BookServiceTest {
                 book2.getDescription(),
                 book2.getCoverImage()
         );
-
+        Long categoryId = 1L;
         List<BookDtoWithoutCategoryIds> expected = List.of(bookDto1, bookDto2);
 
         Pageable pageable = PageRequest.of(0, 10);
@@ -199,23 +204,22 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("Check if findAll works")
-    void findAll_ValidPageable_ReturnsAllBooks() {
+    @DisplayName("Check if search books is working")
+    void search_ValidSearchParams_ReturnsListOfBooks() {
         //given
         Book book1 = new Book();
         book1.setId(1L);
         book1.setTitle("Book1");
-        book1.setAuthor("Test Author1");
+        book1.setAuthor("Test author");
         book1.setIsbn("123-123-0001");
         book1.setPrice(BigDecimal.valueOf(100));
 
         Book book2 = new Book();
         book2.setId(2L);
         book2.setTitle("Book2");
-        book2.setAuthor("Test Author2");
+        book2.setAuthor("Test author");
         book2.setIsbn("123-123-0002");
         book2.setPrice(BigDecimal.valueOf(200));
-        Page<Book> books = new PageImpl<>(List.of(book1, book2));
 
         BookDto bookDto1 = new BookDto();
         bookDto1.setId(book1.getId());
@@ -231,6 +235,60 @@ public class BookServiceTest {
         bookDto2.setIsbn(book2.getIsbn());
         bookDto2.setPrice(book2.getPrice());
         List<BookDto> expected = List.of(bookDto1, bookDto2);
+
+        var bookSearchParameters = new BookSearchParameters(
+                new String[]{"Book1", "Book2"},
+                new String[]{"Test author"});
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Book> books = new PageImpl<>(List.of(book1, book2));
+
+        Mockito.when(bookRepository
+                        .findAll(specificationBuilder.build(bookSearchParameters), pageable))
+                .thenReturn(books);
+        Mockito.when(bookMapper.toDto(book1))
+                .thenReturn(bookDto1);
+        Mockito.when(bookMapper.toDto(book2))
+                .thenReturn(bookDto2);
+        //when
+        List<BookDto> actual = bookService.search(bookSearchParameters, pageable);
+
+        //then
+        Assertions.assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("Check if findAll books works")
+    void findAll_ValidPageable_ReturnsAllBooks() {
+        //given
+        Book book1 = new Book();
+        book1.setId(1L);
+        book1.setTitle("Book1");
+        book1.setAuthor("Test Author1");
+        book1.setIsbn("123-123-0001");
+        book1.setPrice(BigDecimal.valueOf(100));
+
+        Book book2 = new Book();
+        book2.setId(2L);
+        book2.setTitle("Book2");
+        book2.setAuthor("Test Author2");
+        book2.setIsbn("123-123-0002");
+        book2.setPrice(BigDecimal.valueOf(200));
+
+        BookDto bookDto1 = new BookDto();
+        bookDto1.setId(book1.getId());
+        bookDto1.setTitle(book1.getTitle());
+        bookDto1.setAuthor(book1.getAuthor());
+        bookDto1.setIsbn(book1.getIsbn());
+        bookDto1.setPrice(book1.getPrice());
+
+        BookDto bookDto2 = new BookDto();
+        bookDto2.setId(book2.getId());
+        bookDto2.setTitle(book2.getTitle());
+        bookDto2.setAuthor(book2.getAuthor());
+        bookDto2.setIsbn(book2.getIsbn());
+        bookDto2.setPrice(book2.getPrice());
+        List<BookDto> expected = List.of(bookDto1, bookDto2);
+        Page<Book> books = new PageImpl<>(List.of(book1, book2));
 
         Pageable pageable = PageRequest.of(0, 10);
         Mockito.when(bookRepository.findAll(pageable))
@@ -249,7 +307,7 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("Check if delete is invoked")
+    @DisplayName("Check if delete book is invoked")
     void deleteById_ValidId_DeletesBook() {
         //given
         Long bookId = 1L;
@@ -262,7 +320,7 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("Check if deleteById throws exception with incorrect index")
+    @DisplayName("Check if deleteById book throws exception with incorrect index")
     void deleteById_InvalidId_ThrowsException() {
         //given
         Long bookId = -1L;
@@ -280,8 +338,55 @@ public class BookServiceTest {
     }
 
     @Test
+    @DisplayName("Check if updateById book returns updated bookDto")
     void updateById_ValidId_ReturnsUpdatedBookDto() {
+        //given
+        Long bookId = 1L;
+        Book book = new Book();
+        book.setId(bookId);
+        book.setTitle("Test Book");
+        book.setAuthor("Test Author");
+        book.setIsbn("123-123-0002");
+        book.setPrice(BigDecimal.valueOf(200));
+        Mockito.when(bookRepository.findById(bookId))
+                .thenReturn(Optional.of(book));
 
+        var requestDto = new UpdateBookRequestDto(
+                "UpdatedBook",
+                "UpdatedAuthor",
+                "123-123-0003",
+                BigDecimal.valueOf(300),
+                Set.of(1L, 2L),
+                null,
+                null
+        );
+        Set<Category> categories = requestDto.categoriesIds().stream()
+                .map(id -> {
+                    Category category = new Category();
+                    category.setId(id);
+                    return category;
+                })
+                .collect(Collectors.toSet());
+        Mockito.when(categoryRepository.findAllById(requestDto.categoriesIds()))
+                .thenReturn(new ArrayList<>(categories));
+
+        BookDto expected = new BookDto();
+        expected.setId(bookId);
+        expected.setTitle(requestDto.title());
+        expected.setAuthor(requestDto.author());
+        expected.setIsbn(requestDto.isbn());
+        expected.setPrice(requestDto.price());
+        expected.setCategoriesIds(requestDto.categoriesIds());
+
+        Mockito.when(bookRepository.save(book)).thenReturn(book);
+        Mockito.when(bookMapper.toDto(book)).thenReturn(expected);
+
+        //when
+        BookDto actual = bookService.updateById(bookId, requestDto);
+
+        //then
+        Assertions.assertThat(actual).isEqualTo(expected);
+        Mockito.verify(bookRepository, Mockito.times(1)).save(book);
     }
 }
 
