@@ -1,4 +1,4 @@
-package book.store.onlinebookstore;
+package book.store.onlinebookstore.category;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

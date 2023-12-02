@@ -1,4 +1,4 @@
-package book.store.onlinebookstore;
+package book.store.onlinebookstore.book;
 
 import book.store.onlinebookstore.model.Book;
 import book.store.onlinebookstore.repository.book.BookRepository;
@@ -25,7 +25,7 @@ public class BookRepositoryTest {
     @DisplayName("Check if findById returns correct book")
     @Sql(scripts = "classpath:database.scripts/book/add-one-book.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database.scripts/book/delete-one-book.sql",
+    @Sql(scripts = "classpath:database.scripts/book/clear-book-table.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findById_ValidId_ReturnsBook() {
         Optional<Book> actual = bookRepository.findById(1L);
@@ -36,7 +36,7 @@ public class BookRepositoryTest {
     @DisplayName("Check if findAll returns list of books")
     @Sql(scripts = "classpath:database.scripts/book/add-three-books.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database.scripts/book/delete-three-books.sql",
+    @Sql(scripts = "classpath:database.scripts/book/clear-book-table.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findAll_ValidPageable_ReturnsListOfBooks() {
         Pageable pageable = PageRequest.of(0, 10);
