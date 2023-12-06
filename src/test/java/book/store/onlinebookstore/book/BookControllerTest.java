@@ -46,8 +46,8 @@ public class BookControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
     @DisplayName("Check creating book")
+    @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
     @Sql(scripts = "classpath:database.scripts/book/clear-book-table.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @SneakyThrows
@@ -252,8 +252,8 @@ public class BookControllerTest {
 
         //when
         MvcResult result = mockMvc.perform(
-                get("/api/books/search?titles=test-book1,test-book2&authors=test-author")
-                        .contentType(MediaType.APPLICATION_JSON))
+                        get("/api/books/search?titles=test-book1,test-book2&authors=test-author")
+                                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
