@@ -1,5 +1,7 @@
 package book.store.onlinebookstore.book;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -10,20 +12,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import book.store.onlinebookstore.dto.book.BookDto;
 import book.store.onlinebookstore.dto.book.CreateBookRequestDto;
 import book.store.onlinebookstore.dto.book.UpdateBookRequestDto;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
+import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -45,11 +52,22 @@ public class BookControllerTest {
                 .build();
     }
 
+    @AfterEach
+    void tearDown(@Autowired DataSource dataSource) {
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(true);
+            ScriptUtils.executeSqlScript(
+                    connection,
+                    new ClassPathResource("database.scripts/book/clear-book-table.sql")
+            );
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Test
     @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
     @DisplayName("Check creating book")
-    @Sql(scripts = "classpath:database.scripts/book/clear-book-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @SneakyThrows
     void createBook_ValidCreateRequestDto_ReturnsBookDto() {
         //given
@@ -81,7 +99,7 @@ public class BookControllerTest {
         //then
         BookDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 BookDto.class);
-        Assertions.assertNotNull(actual);
+        assertNotNull(actual);
         EqualsBuilder.reflectionEquals(expected, actual, "id");
     }
 
@@ -90,8 +108,6 @@ public class BookControllerTest {
     @WithMockUser
     @Sql(scripts = "classpath:database.scripts/book/add-three-books.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database.scripts/book/clear-book-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @SneakyThrows
     void getAll_ValidPageable_ReturnsListOfBooks() {
         //given
@@ -125,10 +141,11 @@ public class BookControllerTest {
                 .andReturn();
 
         //then
-        BookDto[] actual = objectMapper.readValue(result.getResponse().getContentAsString(),
-                BookDto[].class);
-        Assertions.assertEquals(expected.size(), actual.length);
-        Assertions.assertEquals(expected, Arrays.stream(actual).toList());
+        List<BookDto> actual = objectMapper.readValue(result.getResponse().getContentAsString(),
+                new TypeReference<>() {
+                });
+        assertEquals(expected.size(), actual.size());
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -136,8 +153,6 @@ public class BookControllerTest {
     @WithMockUser
     @Sql(scripts = "classpath:database.scripts/book/add-one-book.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database.scripts/book/clear-book-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @SneakyThrows
     void getById_ValidId_ReturnsBookDto() {
         //given
@@ -158,8 +173,8 @@ public class BookControllerTest {
         //then
         BookDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 BookDto.class);
-        Assertions.assertNotNull(actual);
-        Assertions.assertEquals(expected, actual);
+        assertNotNull(actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -167,8 +182,6 @@ public class BookControllerTest {
     @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
     @Sql(scripts = "classpath:database.scripts/book/add-one-book.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database.scripts/book/clear-book-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @SneakyThrows
     void updateById_ValidId_ReturnsUpdatedBookDto() {
         //given
@@ -200,8 +213,8 @@ public class BookControllerTest {
         //then
         BookDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 BookDto.class);
-        Assertions.assertNotNull(actual);
-        Assertions.assertEquals(expected, actual);
+        assertNotNull(actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -209,8 +222,6 @@ public class BookControllerTest {
     @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
     @Sql(scripts = "classpath:database.scripts/book/add-one-book.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database.scripts/book/clear-book-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @SneakyThrows
     void deleteById_ValidId_BookIsDeleted() {
         //when
@@ -229,8 +240,6 @@ public class BookControllerTest {
     @WithMockUser
     @Sql(scripts = "classpath:database.scripts/book/add-three-books.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database.scripts/book/clear-book-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @SneakyThrows
     void search_ValidValues_ReturnsListOfBooks() {
         //given
@@ -252,15 +261,16 @@ public class BookControllerTest {
 
         //when
         MvcResult result = mockMvc.perform(
-                get("/api/books/search?titles=test-book1,test-book2&authors=test-author")
-                        .contentType(MediaType.APPLICATION_JSON))
+                        get("/api/books/search?titles=test-book1,test-book2&authors=test-author")
+                                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
         //then
-        BookDto[] actual = objectMapper.readValue(result.getResponse().getContentAsString(),
-                BookDto[].class);
-        Assertions.assertEquals(expected.size(), actual.length);
-        Assertions.assertEquals(expected, Arrays.stream(actual).toList());
+        List<BookDto> actual = objectMapper.readValue(result.getResponse().getContentAsString(),
+                new TypeReference<>() {
+                });
+        assertEquals(expected.size(), actual.size());
+        assertEquals(expected, actual);
     }
 }

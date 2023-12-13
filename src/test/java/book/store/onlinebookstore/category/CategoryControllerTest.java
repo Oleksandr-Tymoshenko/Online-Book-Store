@@ -13,17 +13,23 @@ import book.store.onlinebookstore.dto.category.CreateCategoryRequestDto;
 import book.store.onlinebookstore.dto.category.UpdateCategoryRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -45,11 +51,27 @@ public class CategoryControllerTest {
                 .build();
     }
 
+    @AfterEach
+    void tearDown(@Autowired DataSource dataSource) {
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(true);
+            ScriptUtils.executeSqlScript(
+                    connection,
+                    new ClassPathResource(
+                            "database.scripts/category/delete-three-books-and-categories.sql")
+            );
+            ScriptUtils.executeSqlScript(
+                    connection,
+                    new ClassPathResource("database.scripts/category/clear-categories-table.sql")
+            );
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Test
     @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
     @DisplayName("Check creating category")
-    @Sql(scripts = "classpath:database.scripts/category/clear-categories-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @SneakyThrows
     void createCategory_ValidCreateRequestDto_ReturnsCategoryDto() {
         //given
@@ -75,8 +97,6 @@ public class CategoryControllerTest {
     @WithMockUser
     @Sql(scripts = "classpath:database.scripts/category/add-three-categories.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database.scripts/category/clear-categories-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @SneakyThrows
     void getAll_ValidPageable_ReturnsListOfBooks() {
         //given
@@ -103,8 +123,6 @@ public class CategoryControllerTest {
     @WithMockUser
     @Sql(scripts = "classpath:database.scripts/category/add-three-categories.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database.scripts/category/clear-categories-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @SneakyThrows
     void getCategoryById_ValidId_ReturnsCategoryDto() {
         //given
@@ -128,8 +146,6 @@ public class CategoryControllerTest {
     @WithMockUser
     @Sql(scripts = "classpath:database.scripts/category/add-three-books-and-categories.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database.scripts/category/delete-three-books-and-categories.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @SneakyThrows
     void getBooksByCategoryId_ValidId_ReturnsListOfBookDtoWithoutCategories() {
         //given
@@ -167,8 +183,6 @@ public class CategoryControllerTest {
     @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
     @Sql(scripts = "classpath:database.scripts/category/add-three-categories.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database.scripts/category/clear-categories-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @SneakyThrows
     void updateCategory_ValidRequestDto_ReturnsCategoryDto() {
         //given
@@ -194,8 +208,6 @@ public class CategoryControllerTest {
     @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
     @Sql(scripts = "classpath:database.scripts/category/add-three-categories.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database.scripts/category/clear-categories-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @SneakyThrows
     void deleteCategory_ValidId_DeletesCategory() {
         //when
