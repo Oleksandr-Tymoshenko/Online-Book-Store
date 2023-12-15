@@ -17,6 +17,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Sql(scripts = "classpath:database.scripts/book/clear-book-table.sql",
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class BookRepositoryTest {
     @Autowired
     private BookRepository bookRepository;
@@ -25,8 +27,6 @@ public class BookRepositoryTest {
     @DisplayName("Check if findById returns correct book")
     @Sql(scripts = "classpath:database.scripts/book/add-one-book.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database.scripts/book/clear-book-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findById_ValidId_ReturnsBook() {
         Optional<Book> actual = bookRepository.findById(1L);
         Assertions.assertTrue(actual.isPresent());
@@ -36,8 +36,6 @@ public class BookRepositoryTest {
     @DisplayName("Check if findAll returns list of books")
     @Sql(scripts = "classpath:database.scripts/book/add-three-books.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database.scripts/book/clear-book-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findAll_ValidPageable_ReturnsListOfBooks() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Book> books = bookRepository.findAll(pageable);
@@ -48,8 +46,6 @@ public class BookRepositoryTest {
     @DisplayName("Check if findAllByCategoryId returns list of books")
     @Sql(scripts = "classpath:database.scripts/category/add-three-books-and-categories.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database.scripts/category/delete-three-books-and-categories.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findAllByCategoriesId_ValidIdAndPageable_ReturnsListOfBooks() {
         Pageable pageable = PageRequest.of(0, 10);
         List<Book> books = bookRepository.findAllByCategoriesId(1L, pageable);
