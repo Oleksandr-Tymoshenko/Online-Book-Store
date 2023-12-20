@@ -67,6 +67,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void deleteById(Long id) {
+        if (id < 1) {
+            throw new IndexOutOfBoundsException("Index cannot be less then 1");
+        }
         bookRepository.deleteById(id);
     }
 
