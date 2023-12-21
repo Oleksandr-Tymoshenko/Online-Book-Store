@@ -2,79 +2,31 @@ package book.store.onlinebookstore.shoppingcart.item;
 
 import book.store.onlinebookstore.model.CartItem;
 import book.store.onlinebookstore.repository.cartitem.CartItemRepository;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import javax.sql.DataSource;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
+import org.springframework.test.context.jdbc.Sql;
 
 @DataJpaTest
+@Sql(scripts = {"classpath:database.scripts/book/add-three-books.sql",
+        "classpath:database.scripts/user/add-user.sql",
+        "classpath:database.scripts/shoppingcart/add-shopping-cart.sql",
+        "classpath:database.scripts/shoppingcart/item/add-three-cart-items.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = {"classpath:database.scripts/shoppingcart/item/delete-cart-items.sql",
+        "classpath:database.scripts/book/clear-book-table.sql",
+        "classpath:database.scripts/shoppingcart/delete-shopping-cart.sql",
+        "classpath:database.scripts/user/delete-user.sql"},
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_CLASS)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class CartItemRepositoryTest {
     @Autowired
     private CartItemRepository cartItemRepository;
-
-    @BeforeAll
-    static void beforeAll(@Autowired DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database.scripts/book/add-three-books.sql")
-            );
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database.scripts/user/add-user.sql")
-            );
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database.scripts/shoppingcart/add-shopping-cart.sql")
-            );
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource(
-                            "database.scripts/shoppingcart/item/add-three-cart-items.sql")
-            );
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @AfterAll
-    static void afterAll(@Autowired DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource(
-                            "database.scripts/shoppingcart/item/delete-cart-items.sql")
-            );
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database.scripts/book/clear-book-table.sql")
-            );
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database.scripts/shoppingcart/delete-shopping-cart.sql")
-            );
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database.scripts/user/delete-user.sql")
-            );
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Test
     @DisplayName("Check if cart item is returned by id")

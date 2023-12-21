@@ -7,6 +7,7 @@ import book.store.onlinebookstore.dto.user.UserRegistrationRequestDto;
 import book.store.onlinebookstore.dto.user.UserRegistrationResponseDto;
 import book.store.onlinebookstore.exception.UserRegistrationException;
 import book.store.onlinebookstore.mapper.UserMapper;
+import book.store.onlinebookstore.mapper.UserMapperImpl;
 import book.store.onlinebookstore.model.Role;
 import book.store.onlinebookstore.model.User;
 import book.store.onlinebookstore.repository.role.RoleRepository;
@@ -35,8 +36,8 @@ public class UserServiceTest {
     private RoleRepository roleRepository;
     @Spy
     private PasswordEncoder passwordEncoder;
-    @Mock
-    private UserMapper userMapper;
+    @Spy
+    private UserMapper userMapper = new UserMapperImpl();
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -45,29 +46,24 @@ public class UserServiceTest {
     @SneakyThrows
     void register_ValidUserRequest_ReturnsUserDto() {
         //given
-        var requestDto = new UserRegistrationRequestDto(
-                DEFAULT_USERNAME,
-                "Name",
-                "Surname",
-                "Address",
-                DEFAULT_PASSWORD,
-                DEFAULT_PASSWORD
-        );
+        var requestDto = getDefaultUserRegistrationRequestDto();
         User user = new User();
+        user.setEmail(requestDto.email());
+        user.setFirstName(requestDto.firstName());
+        user.setLastName(requestDto.lastName());
+        user.setShippingAddress(requestDto.shippingAddress());
 
+        Mockito.when(userRepository.findUserByEmail(requestDto.email()))
+                .thenReturn(Optional.empty());
+        Mockito.when(roleRepository.getRoleByName(Role.RoleName.USER)).thenReturn(new Role());
+        Mockito.when(userRepository.save(user)).thenReturn(user);
         var expected = new UserRegistrationResponseDto(
-                1L,
+                null,
                 requestDto.email(),
                 requestDto.firstName(),
                 requestDto.lastName(),
                 requestDto.shippingAddress()
         );
-        Mockito.when(userRepository.findUserByEmail(requestDto.email()))
-                .thenReturn(Optional.empty());
-        Mockito.when(userMapper.toUser(requestDto)).thenReturn(user);
-        Mockito.when(roleRepository.getRoleByName(Role.RoleName.USER)).thenReturn(new Role());
-        Mockito.when(userRepository.save(user)).thenReturn(user);
-        Mockito.when(userMapper.toUserResponseDto(user)).thenReturn(expected);
 
         //when
         UserRegistrationResponseDto actual = userService.register(requestDto);
@@ -81,14 +77,7 @@ public class UserServiceTest {
     @DisplayName("Check if register throws exception when user with this email exists")
     void register_InvalidUserEmail_ThrowsException() {
         //given
-        var requestDto = new UserRegistrationRequestDto(
-                DEFAULT_USERNAME,
-                "Name",
-                "Surname",
-                "Address",
-                DEFAULT_PASSWORD,
-                DEFAULT_PASSWORD
-        );
+        var requestDto = getDefaultUserRegistrationRequestDto();
         Mockito.when(userRepository.findUserByEmail(requestDto.email()))
                 .thenReturn(Optional.of(new User()));
 
@@ -102,5 +91,16 @@ public class UserServiceTest {
         String expected = "Can't register user";
         String actual = exception.getMessage();
         assertEquals(expected, actual);
+    }
+
+    private static UserRegistrationRequestDto getDefaultUserRegistrationRequestDto() {
+        return new UserRegistrationRequestDto(
+                DEFAULT_USERNAME,
+                "Name",
+                "Surname",
+                "Address",
+                DEFAULT_PASSWORD,
+                DEFAULT_PASSWORD
+        );
     }
 }

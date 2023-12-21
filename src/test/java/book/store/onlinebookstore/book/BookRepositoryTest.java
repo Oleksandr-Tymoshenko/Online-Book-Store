@@ -19,8 +19,6 @@ import org.springframework.test.context.jdbc.Sql;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Sql(scripts = "classpath:database.scripts/book/clear-book-table.sql",
-        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class BookRepositoryTest {
     @Autowired
     private BookRepository bookRepository;

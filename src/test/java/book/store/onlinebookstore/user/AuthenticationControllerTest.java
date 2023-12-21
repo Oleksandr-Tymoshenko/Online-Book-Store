@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -28,15 +27,13 @@ import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AuthenticationControllerTest {
-    protected static MockMvc mockMvc;
+    private static MockMvc mockMvc;
     private static final String DEFAULT_USERNAME = "email@gmail.com";
     private static final String DEFAULT_PASSWORD = "12345678";
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private JwtUtil jwtUtil;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @BeforeAll
     static void beforeAll(@Autowired WebApplicationContext applicationContext) {

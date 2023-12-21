@@ -1,5 +1,7 @@
 package book.store.onlinebookstore.shoppingcart;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -12,22 +14,15 @@ import book.store.onlinebookstore.dto.cartitem.CreateCartItemRequestDto;
 import book.store.onlinebookstore.dto.cartitem.UpdateCartItemRequestDto;
 import book.store.onlinebookstore.dto.shoppingcart.ShoppingCartDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Set;
-import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,57 +31,26 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts = {"classpath:database.scripts/book/add-three-books.sql",
+        "classpath:database.scripts/user/add-user.sql",
+        "classpath:database.scripts/shoppingcart/add-shopping-cart.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = {"classpath:database.scripts/book/clear-book-table.sql",
+        "classpath:database.scripts/shoppingcart/delete-shopping-cart.sql",
+        "classpath:database.scripts/user/delete-user.sql"},
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_CLASS)
 public class ShoppingCartControllerTest {
-    protected static MockMvc mockMvc;
+    private static MockMvc mockMvc;
     private static final String DEFAULT_USERNAME = "email@gmail.com";
     @Autowired
     private ObjectMapper objectMapper;
 
     @BeforeAll
-    static void beforeAll(@Autowired WebApplicationContext applicationContext,
-                          @Autowired DataSource dataSource) {
+    static void beforeAll(@Autowired WebApplicationContext applicationContext) {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(applicationContext)
                 .apply(springSecurity())
                 .build();
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database.scripts/book/add-three-books.sql")
-            );
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database.scripts/user/add-user.sql")
-            );
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database.scripts/shoppingcart/add-shopping-cart.sql")
-            );
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @AfterAll
-    static void afterAll(@Autowired DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database.scripts/book/clear-book-table.sql")
-            );
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database.scripts/shoppingcart/delete-shopping-cart.sql")
-            );
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database.scripts/user/delete-user.sql")
-            );
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Test
@@ -113,7 +77,7 @@ public class ShoppingCartControllerTest {
         //then
         ShoppingCartDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 ShoppingCartDto.class);
-        Assertions.assertNotNull(actual);
+        assertNotNull(actual);
         EqualsBuilder.reflectionEquals(expected, actual, "id");
     }
 
@@ -142,8 +106,8 @@ public class ShoppingCartControllerTest {
         //then
         ShoppingCartDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 ShoppingCartDto.class);
-        Assertions.assertNotNull(actual);
-        org.assertj.core.api.Assertions.assertThat(actual).isEqualTo(expected);
+        assertNotNull(actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -173,8 +137,8 @@ public class ShoppingCartControllerTest {
         //then
         ShoppingCartDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 ShoppingCartDto.class);
-        Assertions.assertNotNull(actual);
-        org.assertj.core.api.Assertions.assertThat(actual).isEqualTo(expected);
+        assertNotNull(actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -201,7 +165,7 @@ public class ShoppingCartControllerTest {
         //then
         ShoppingCartDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 ShoppingCartDto.class);
-        Assertions.assertNotNull(actual);
-        org.assertj.core.api.Assertions.assertThat(actual).isEqualTo(expected);
+        assertNotNull(actual);
+        assertEquals(expected, actual);
     }
 }
