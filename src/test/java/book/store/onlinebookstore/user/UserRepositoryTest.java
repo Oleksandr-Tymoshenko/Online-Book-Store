@@ -1,5 +1,8 @@
 package book.store.onlinebookstore.user;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import book.store.onlinebookstore.model.User;
 import book.store.onlinebookstore.repository.user.UserRepository;
 import java.util.Optional;
@@ -39,7 +42,7 @@ public class UserRepositoryTest {
         Optional<User> actual = userRepository.findUserByEmail(expected.getEmail());
 
         //then
-        Assertions.assertTrue(actual.isPresent());
-        org.assertj.core.api.Assertions.assertThat(actual.get()).isEqualTo(expected);
+        assertTrue(actual.isPresent());
+        assertEquals(expected, actual.get());
     }
 }
