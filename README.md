@@ -61,7 +61,7 @@ git clone https://github.com/Oleksandr-Tymoshenko/Online-Book-Store.git
 docker-compose up --build
 ```
 
-5. The application should now be running at `http://localhost:8081`.
+5. The application should now be running at `http://localhost:<YOUR_PORT_FROM_ENV>`.
 
 
 
