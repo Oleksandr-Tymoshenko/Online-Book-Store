@@ -24,7 +24,6 @@ import book.store.onlinebookstore.service.impl.ShoppingCartServiceImpl;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
