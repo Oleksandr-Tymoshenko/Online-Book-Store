@@ -12,6 +12,7 @@ import book.store.onlinebookstore.dto.book.CreateBookRequestDto;
 import book.store.onlinebookstore.dto.book.UpdateBookRequestDto;
 import book.store.onlinebookstore.exception.EntityNotFoundException;
 import book.store.onlinebookstore.mapper.BookMapper;
+import book.store.onlinebookstore.mapper.BookMapperImpl;
 import book.store.onlinebookstore.model.Book;
 import book.store.onlinebookstore.model.Category;
 import book.store.onlinebookstore.repository.book.BookRepository;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -44,8 +46,8 @@ public class BookServiceTest {
     @Mock
     private CategoryRepository categoryRepository;
 
-    @Mock
-    private BookMapper bookMapper;
+    @Spy
+    private BookMapper bookMapper = new BookMapperImpl();
 
     @Mock
     private BookSpecificationBuilder specificationBuilder;
@@ -82,18 +84,15 @@ public class BookServiceTest {
         book.setCategories(categories);
 
         BookDto expected = new BookDto();
-        expected.setId(1L);
         expected.setTitle(requestDto.title());
         expected.setAuthor(requestDto.author());
         expected.setIsbn(requestDto.isbn());
         expected.setPrice(requestDto.price());
         expected.setCategoriesIds(requestDto.categoriesIds());
 
-        when(bookMapper.toBook(requestDto)).thenReturn(book);
         when(categoryRepository.findAllById(requestDto.categoriesIds()))
                 .thenReturn(new ArrayList<>(categories));
         when(bookRepository.save(book)).thenReturn(book);
-        when(bookMapper.toDto(book)).thenReturn(expected);
 
         //when
         BookDto actual = bookService.save(requestDto);
@@ -115,9 +114,9 @@ public class BookServiceTest {
         BookDto expected = new BookDto();
         expected.setId(bookId);
         expected.setTitle(book.getTitle());
+        expected.setCategoriesIds(Set.of());
 
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
-        when(bookMapper.toDto(book)).thenReturn(expected);
 
         //when
         BookDto actual = bookService.getById(bookId);
@@ -188,10 +187,6 @@ public class BookServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         when(bookRepository.findAllByCategoriesId(categoryId, pageable))
                 .thenReturn(books);
-        when(bookMapper.toDtoWithoutCategories(book1))
-                .thenReturn(bookDto1);
-        when(bookMapper.toDtoWithoutCategories(book2))
-                .thenReturn(bookDto2);
         List<BookDtoWithoutCategoryIds> expected = List.of(bookDto1, bookDto2);
 
         //when
@@ -228,6 +223,7 @@ public class BookServiceTest {
         bookDto1.setAuthor(book1.getAuthor());
         bookDto1.setIsbn(book1.getIsbn());
         bookDto1.setPrice(book1.getPrice());
+        bookDto1.setCategoriesIds(Set.of());
 
         BookDto bookDto2 = new BookDto();
         bookDto2.setId(book2.getId());
@@ -235,6 +231,7 @@ public class BookServiceTest {
         bookDto2.setAuthor(book2.getAuthor());
         bookDto2.setIsbn(book2.getIsbn());
         bookDto2.setPrice(book2.getPrice());
+        bookDto2.setCategoriesIds(Set.of());
 
         var bookSearchParameters = new BookSearchParameters(
                 new String[]{"Book1", "Book2"},
@@ -245,10 +242,6 @@ public class BookServiceTest {
         when(bookRepository
                 .findAll(specificationBuilder.build(bookSearchParameters), pageable))
                 .thenReturn(books);
-        when(bookMapper.toDto(book1))
-                .thenReturn(bookDto1);
-        when(bookMapper.toDto(book2))
-                .thenReturn(bookDto2);
         List<BookDto> expected = List.of(bookDto1, bookDto2);
         //when
         List<BookDto> actual = bookService.search(bookSearchParameters, pageable);
@@ -281,6 +274,7 @@ public class BookServiceTest {
         bookDto1.setAuthor(book1.getAuthor());
         bookDto1.setIsbn(book1.getIsbn());
         bookDto1.setPrice(book1.getPrice());
+        bookDto1.setCategoriesIds(Set.of());
 
         BookDto bookDto2 = new BookDto();
         bookDto2.setId(book2.getId());
@@ -288,15 +282,12 @@ public class BookServiceTest {
         bookDto2.setAuthor(book2.getAuthor());
         bookDto2.setIsbn(book2.getIsbn());
         bookDto2.setPrice(book2.getPrice());
+        bookDto2.setCategoriesIds(Set.of());
         Page<Book> books = new PageImpl<>(List.of(book1, book2));
 
         Pageable pageable = PageRequest.of(0, 10);
         when(bookRepository.findAll(pageable))
                 .thenReturn(books);
-        when(bookMapper.toDto(book1))
-                .thenReturn(bookDto1);
-        when(bookMapper.toDto(book2))
-                .thenReturn(bookDto2);
         List<BookDto> expected = List.of(bookDto1, bookDto2);
 
         //when
@@ -380,7 +371,6 @@ public class BookServiceTest {
         expected.setCategoriesIds(requestDto.categoriesIds());
 
         when(bookRepository.save(book)).thenReturn(book);
-        when(bookMapper.toDto(book)).thenReturn(expected);
 
         //when
         BookDto actual = bookService.updateById(bookId, requestDto);

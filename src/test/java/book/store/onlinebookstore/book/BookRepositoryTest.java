@@ -2,8 +2,10 @@ package book.store.onlinebookstore.book;
 
 import book.store.onlinebookstore.model.Book;
 import book.store.onlinebookstore.repository.book.BookRepository;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,8 +19,6 @@ import org.springframework.test.context.jdbc.Sql;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Sql(scripts = "classpath:database.scripts/book/clear-book-table.sql",
-        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class BookRepositoryTest {
     @Autowired
     private BookRepository bookRepository;
@@ -28,8 +28,17 @@ public class BookRepositoryTest {
     @Sql(scripts = "classpath:database.scripts/book/add-one-book.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void findById_ValidId_ReturnsBook() {
+        Book expected = new Book();
+        expected.setId(1L);
+        expected.setTitle("test-book");
+        expected.setAuthor("test-author");
+        expected.setIsbn("123-123-0001");
+        expected.setCartItems(Set.of());
+        expected.setOrderItems(Set.of());
+        expected.setPrice(BigDecimal.valueOf(100.99));
         Optional<Book> actual = bookRepository.findById(1L);
         Assertions.assertTrue(actual.isPresent());
+        Assertions.assertEquals(expected, actual.get());
     }
 
     @Test

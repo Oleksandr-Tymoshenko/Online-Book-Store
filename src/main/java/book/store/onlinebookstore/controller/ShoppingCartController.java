@@ -3,7 +3,6 @@ package book.store.onlinebookstore.controller;
 import book.store.onlinebookstore.dto.cartitem.CreateCartItemRequestDto;
 import book.store.onlinebookstore.dto.cartitem.UpdateCartItemRequestDto;
 import book.store.onlinebookstore.dto.shoppingcart.ShoppingCartDto;
-import book.store.onlinebookstore.model.User;
 import book.store.onlinebookstore.service.ShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,8 +38,7 @@ public class ShoppingCartController {
             description = "Add a new book to shopping cart")
     public ShoppingCartDto addCartItem(@RequestBody @Valid CreateCartItemRequestDto requestDto,
                                        Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return shoppingCartService.addCartItem(requestDto, user);
+        return shoppingCartService.addCartItem(requestDto, authentication);
     }
 
     @GetMapping
@@ -48,8 +46,7 @@ public class ShoppingCartController {
     @Operation(summary = "Get shopping cart",
             description = "Get shopping cart")
     public ShoppingCartDto getShoppingCart(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return shoppingCartService.getShoppingCart(user.getId());
+        return shoppingCartService.getShoppingCart(authentication);
     }
 
     @PutMapping("/cart-items/{id}")
@@ -59,8 +56,7 @@ public class ShoppingCartController {
     public ShoppingCartDto updateCartItem(@PathVariable @Positive Long id,
                                           @RequestBody UpdateCartItemRequestDto requestDto,
                                           Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return shoppingCartService.updateCartItem(user.getId(), id, requestDto.quantity());
+        return shoppingCartService.updateCartItem(authentication, id, requestDto.quantity());
     }
 
     @DeleteMapping("/cart-items/{id}")
@@ -69,7 +65,6 @@ public class ShoppingCartController {
             description = "Delete book from shopping cart by id")
     public ShoppingCartDto deleteCartItem(@PathVariable @Positive Long id,
                                           Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return shoppingCartService.deleteCartItemById(user.getId(), id);
+        return shoppingCartService.deleteCartItemById(authentication, id);
     }
 }
