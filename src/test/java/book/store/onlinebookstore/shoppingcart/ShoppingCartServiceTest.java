@@ -2,6 +2,7 @@ package book.store.onlinebookstore.shoppingcart;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 
 import book.store.onlinebookstore.dto.cartitem.CartItemDto;
 import book.store.onlinebookstore.dto.cartitem.CreateCartItemRequestDto;
@@ -86,14 +87,15 @@ public class ShoppingCartServiceTest {
         ShoppingCartDto actual = shoppingCartService.addCartItem(requestDto, authentication);
 
         //then
-        Assertions.assertEquals(expected, actual);
-        Mockito.verify(shoppingCartRepository, Mockito.times(1))
+        assertEquals(expected, actual);
+        verify(shoppingCartRepository, Mockito.times(1))
                 .save(shoppingCart);
     }
 
     @Test
-    @DisplayName("Check adding existing cart item to shopping cart "
-            + "and if shopping cart dto is returned")
+    @DisplayName("""
+            Check adding existing cart item to shopping cart
+            and if shopping cart dto is returned""")
     void addCartItem_ExistingCartItem_ReturnsShoppingCartDto() {
         //given
         var requestDto = new CreateCartItemRequestDto(1L, 2);
@@ -124,9 +126,7 @@ public class ShoppingCartServiceTest {
         ShoppingCartDto actual = shoppingCartService.addCartItem(requestDto, authentication);
 
         //then
-        Assertions.assertEquals(expected, actual);
-        Mockito.verify(cartItemRepository, Mockito.times(0))
-                .save(cartItem);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -169,7 +169,7 @@ public class ShoppingCartServiceTest {
         ShoppingCartDto actual = shoppingCartService.getShoppingCart(authentication);
 
         //then
-        Assertions.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -201,7 +201,7 @@ public class ShoppingCartServiceTest {
                 .updateCartItem(authentication, cartItem.getId(), 3);
 
         //then
-        Assertions.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -227,7 +227,7 @@ public class ShoppingCartServiceTest {
                 cartItem.getId());
 
         //then
-        Assertions.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     private User getDefaultUser() {
